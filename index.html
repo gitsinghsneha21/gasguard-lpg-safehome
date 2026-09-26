@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPG SafeHome</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Material Symbols for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+</head>
+<body>
+    <div id="app-container">
+        <!-- HEADER -->
+        <header id="app-header">
+            <button class="icon-btn" id="back-btn" style="display: none;" onclick="goBack()">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 id="header-title">LPG SafeHome</h1>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="navigateTo('history-screen')"><span class="material-symbols-outlined">history</span></button>
+                <button class="icon-btn" onclick="navigateTo('settings-screen')"><span class="material-symbols-outlined">settings</span></button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main id="content-area">
+            
+            <!-- HOME SCREEN -->
+            <section id="home-screen" class="screen active">
+                <div class="greeting">
+                    <h2>Good Evening 👋</h2>
+                    <p>Stay safe while cooking</p>
+                </div>
+
+                <div class="card status-card safe" id="home-status-card">
+                    <div class="card-header">
+                        <span class="material-symbols-outlined" id="home-status-icon">verified_user</span>
+                        <h3>Kitchen Status</h3>
+                    </div>
+                    <h2 id="home-status-title">SAFE</h2>
+                    <p id="home-status-detail">Last checked: Today, 8:00 PM</p>
+                    <p id="home-gas-reading" style="font-weight: 600; margin-top: 4px;">Gas: 145 PPM | Valve: OPEN</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-symbols-outlined">local_fire_department</span>
+                        <h3>Cooking Session</h3>
+                    </div>
+                    <p id="home-cooking-status">Not currently cooking</p>
+                    <button class="btn primary-btn mt-1" onclick="navigateTo('cooking-setup-screen')">START COOKING</button>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="navigateTo('safety-screen')">
+                        <span class="material-symbols-outlined">fact_check</span>
+                        Safety Check
+                    </button>
+                    <button class="action-btn" onclick="navigateTo('usage-screen')">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                        Usage
+                    </button>
+                    <button class="action-btn emergency-text" onclick="navigateTo('emergency-screen')">
+                        <span class="material-symbols-outlined">warning</span>
+                        Emergency
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-symbols-outlined">alarm</span>
+                        <h3>Next Reminder</h3>
+                    </div>
+                    <p id="home-reminder-status">No active reminder</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="material-symbols-outlined">task_alt</span>
+                        <h3>Today's Safety</h3>
+                    </div>
+                    <p><span id="home-safety-score">0</span>/7 checks completed ✅</p>
+                </div>
+            </section>
+
+            <!-- COOKING SETUP SCREEN -->
+            <section id="cooking-setup-screen" class="screen">
+                <h2>Start Cooking Setup</h2>
+                <div class="card">
+                    <label>Cooking Start Time</label>
+                    <input type="time" id="start-time" value="20:15" class="input-field">
+                    
+                    <label class="mt-1">Expected Duration</label>
+                    <select id="duration-select" class="input-field">
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="45">45 minutes</option>
+                        <option value="60" selected>60 minutes</option>
+                    </select>
+
+                    <label class="mt-1">Reminder Interval</label>
+                    <select id="interval-select" class="input-field">
+                        <option value="15">15 min</option>
+                        <option value="30" selected>30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60">60 min</option>
+                    </select>
+                </div>
+                <button class="btn primary-btn" onclick="startCooking()">START COOKING TIMER</button>
+            </section>
+
+            <!-- ACTIVE COOKING SCREEN -->
+            <section id="active-cooking-screen" class="screen center-content">
+                <h2>🔥 Cooking Session Active</h2>
+                <div class="timer-display" id="timer-display">00:00:00</div>
+                <p>Started at: <span id="active-start-time"></span></p>
+                <p>Expected duration: <span id="active-duration"></span> minutes</p>
+                
+                <div class="timeline mt-2">
+                    <p>✅ 30 min — Have you finished cooking?</p>
+                    <p>⚠️ 45 min — Please check the stove.</p>
+                    <p class="danger-text">🚨 60 min — Check gas immediately.</p>
+                </div>
+
+                <div class="button-group mt-2">
+                    <button class="btn success-btn" onclick="finishCooking()">🟢 COOKING FINISHED</button>
+                    <button class="btn secondary-btn" onclick="snoozeCooking(10)">⏰ SNOOZE 10 MIN</button>
+                </div>
+            </section>
+
+            <!-- SAFETY CHECKLIST SCREEN -->
+            <section id="safety-screen" class="screen">
+                <h2>🛡️ Daily Safety Check</h2>
+                <p>Complete today's safety inspection.</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar" id="safety-progress"></div>
+                </div>
+                <p class="text-center"><span id="safety-count">0</span>/7 Checks Completed</p>
+
+                <div class="checklist mt-1">
+                    <label><input type="checkbox" class="safety-check"> Gas knob turned off</label>
+                    <label><input type="checkbox" class="safety-check"> Regulator turned off</label>
+                    <label><input type="checkbox" class="safety-check"> Cylinder valve checked</label>
+                    <label><input type="checkbox" class="safety-check"> Kitchen ventilation adequate</label>
+                    <label><input type="checkbox" class="safety-check"> No unusual gas smell</label>
+                    <label><input type="checkbox" class="safety-check"> Stove area clear</label>
+                    <label><input type="checkbox" class="safety-check"> Hose inspected</label>
+                </div>
+                <button class="btn success-btn mt-2" id="complete-safety-btn" disabled onclick="completeSafetyCheck()">COMPLETE CHECK</button>
+            </section>
+
+            <!-- USAGE SCREEN -->
+            <section id="usage-screen" class="screen">
+                <h2>📊 Cylinder Usage</h2>
+                <div class="card">
+                    <h3>Cylinder Status</h3>
+                    <div class="progress-container mt-1">
+                        <div class="progress-bar usage" id="usage-progress-bar" style="width: 72%;"></div>
+                    </div>
+                    <h2 class="mt-1" id="usage-percentage-text">72% Estimated Remaining</h2>
+                    <ul class="stats-list mt-1">
+                        <li><strong>Capacity:</strong> <span id="usage-capacity">14.2</span> kg</li>
+                        <li><strong>Estimated remaining:</strong> <span id="usage-remaining">10.2</span> kg</li>
+                        <li><strong>Avg daily usage:</strong> <span id="usage-daily-avg">0.35</span> kg/day</li>
+                        <li><strong>Estimated depletion:</strong> <span id="usage-depletion">30 September</span></li>
+                    </ul>
+                </div>
+                <button class="btn secondary-btn" onclick="addDailyUsage()">+ ADD DAILY USAGE</button>
+                
+                <div class="card mt-1">
+                    <h3>📈 Daily LPG Consumption</h3>
+                    <div class="mock-chart" id="usage-chart">
+                        <!-- Dynamic or mock chart bars -->
+                        <div class="bar" style="height: 40px;" title="Mon"></div>
+                        <div class="bar" style="height: 60px;" title="Tue"></div>
+                        <div class="bar" style="height: 30px;" title="Wed"></div>
+                        <div class="bar" style="height: 50px;" title="Thu"></div>
+                        <div class="bar" style="height: 45px;" title="Fri"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EMERGENCY SCREEN -->
+            <section id="emergency-screen" class="screen center-content">
+                <button class="btn danger-btn massive-btn" onclick="showEmergencyInstructions()">🚨 I SMELL GAS</button>
+                
+                <div id="emergency-instructions" class="card mt-2 hidden" style="text-align: left; border: 2px solid var(--danger-color);">
+                    <h2 class="danger-text text-center">⚠️ Possible LPG Leak</h2>
+                    <ol class="mt-1">
+                        <li>Turn off the gas supply if it is safe to do so.</li>
+                        <li>Open doors and windows for ventilation.</li>
+                        <li>Do NOT operate electrical switches.</li>
+                        <li>Do NOT use flames or create sparks.</li>
+                        <li>Move away from the area if necessary.</li>
+                        <li>Contact emergency/gas services.</li>
+                    </ol>
+                    <button class="btn primary-btn mt-2" onclick="navigateTo('home-screen')">I UNDERSTAND</button>
+                </div>
+            </section>
+
+            <!-- HISTORY SCREEN -->
+            <section id="history-screen" class="screen">
+                <h2>Cooking & Alert History</h2>
+                <div id="history-container">
+                    <div class="card">
+                        <h4>🔥 Cooking Session</h4>
+                        <p class="text-sm text-gray">Today | 8:15 PM – 9:02 PM</p>
+                        <p>Duration: 47 minutes</p>
+                        <p class="success-text">Status: Completed ✅</p>
+                    </div>
+                    <div class="card">
+                        <h4>🔥 Cooking Session</h4>
+                        <p class="text-sm text-gray">Yesterday | 7:30 PM – 8:20 PM</p>
+                        <p>Duration: 50 minutes</p>
+                        <p class="success-text">Status: Completed ✅</p>
+                    </div>
+                    <div class="card warning-border">
+                        <h4>⏰ Reminder Log</h4>
+                        <p class="text-sm text-gray">Yesterday | 8:45 PM</p>
+                        <p>“Please check that the gas stove is turned off.”</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SETTINGS SCREEN -->
+            <section id="settings-screen" class="screen">
+                <h2>Settings</h2>
+                <div class="card">
+                    <div class="setting-item">
+                        <span>🔔 Cooking Reminders</span>
+                        <input type="checkbox" checked class="toggle" id="setting-reminders" onchange="saveSettings()">
+                    </div>
+                    <div class="setting-item mt-1">
+                        <span>Default Reminder (min)</span>
+                        <input type="number" value="30" class="input-field small-input" id="setting-reminder-min" onchange="saveSettings()">
+                    </div>
+                    <div class="setting-item mt-1">
+                        <span>Default Duration (min)</span>
+                        <input type="number" value="60" class="input-field small-input" id="setting-duration-min" onchange="saveSettings()">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🧪 Live Demo & Judge Controls</h3>
+                    <p class="text-sm text-gray">Simulate hardware events without needing real gas</p>
+                    <button class="btn danger-btn mt-1" onclick="simulateGasLeak()">🚨 SIMULATE GAS LEAK (720 PPM)</button>
+                    <button class="btn success-btn mt-1" onclick="simulateSafeState()">🟢 SIMULATE SAFE STATE (140 PPM)</button>
+                    <button class="btn secondary-btn mt-1" onclick="resetDemoData()">🔄 RESET DEMO DATA</button>
+                </div>
+
+                <div class="card">
+                    <p><strong>About LPG SafeHome</strong></p>
+                    <p class="text-sm">Version 1.0.0 (Connected to Node.js Backend & Database)</p>
+                </div>
+            </section>
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav id="bottom-nav">
+            <button class="nav-item active" onclick="navigateTo('home-screen')">
+                <span class="material-symbols-outlined">home</span>
+                Home
+            </button>
+            <button class="nav-item" onclick="navigateTo('cooking-setup-screen')">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                Cooking
+            </button>
+            <button class="nav-item" onclick="navigateTo('usage-screen')">
+                <span class="material-symbols-outlined">bar_chart</span>
+                Usage
+            </button>
+            <button class="nav-item" onclick="navigateTo('safety-screen')">
+                <span class="material-symbols-outlined">shield</span>
+                Safety
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
